@@ -24,7 +24,7 @@ docker run -p 9292:9292 yt-music-download-helper:latest -v <path/to/download/res
 
 ## deploy
 ```
-docker build . -t yt-music-download-helper
+rake build
 docker tag yt-music-download-helper macbury/yt-music-download-helper:latest
 docker push macbury/yt-music-download-helper:latest
 ```

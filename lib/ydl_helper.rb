@@ -1,4 +1,5 @@
 require 'terrapin'
+require 'digest'
 
 class YdlHelper
   attr_reader :download_dir
@@ -9,10 +10,24 @@ class YdlHelper
     FileUtils.mkdir_p(download_dir)
   end
 
+  def get_playlist_videos_ids(url)
+    hash = Digest::MD5.hexdigest(url)
+    result_path = jsons_output_path(hash)
+    FileUtils.mkdir_p(result_path)
+
+    begin
+      exec_command(get_playlist_arguments(hash), { url: url })
+    rescue => e
+
+    end
+
+    Dir.glob(result_path + '*.json').map do |youtube_vide_path|
+      File.basename(youtube_vide_path, '.info.json')
+    end
+  end
+
   def get_info(url)
-    response = exec_command(info_arguments, {
-      url: url
-    }, swallow_stderr: true, expected_outcodes: [0, 1])
+    response = exec_command(info_arguments, { url: url })
 
     result = JSON.parse(response)
 
@@ -40,10 +55,17 @@ class YdlHelper
 
   private
 
-  def exec_command(args, opts, add = {})
-    line = Terrapin::CommandLine.new('youtube-dl', "#{options_to_commands(args)} :url", add)
+  def exec_command(args, opts)
+    line = Terrapin::CommandLine.new('youtube-dl', "#{options_to_commands(args)} :url")
     puts line.command(opts)
     line.run(opts)
+  end
+
+  def info_arguments
+    {
+      'dump-json': true,
+      'ignore-errors': true
+    }
   end
 
   def download_arguments
@@ -51,6 +73,7 @@ class YdlHelper
       'extract-audio': true,
       'format': 'bestaudio/best'.inspect,
       'write-thumbnail': true,
+      'embed-thumbnail': true,
       'no-check-certificate  ': true,
       'output': download_dir.join('%(id)s.%(ext)s').to_s.inspect,
       'ignore-errors': true,  # Do not stop on download errors.
@@ -61,11 +84,17 @@ class YdlHelper
     }
   end
 
-  def info_arguments
+  def get_playlist_arguments(id)
     {
-      'dump-json': true,
-      'ignore-errors': true
+      'write-info-json': true,
+      'ignore-errors': true,
+      'skip-download': true,
+      'output': jsons_output_path(id).join("%(id)s.%(ext)s").to_s.inspect,
     }
+  end
+
+  def jsons_output_path(id)
+    download_dir.join("#{id}/")
   end
 
   def options_to_commands(options)

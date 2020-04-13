@@ -2,8 +2,8 @@ class MetadataProcessor
   attr_reader :storage_path, :album
 
   def initialize(storage_path:, album:)
-    @album = album
-    @storage_path = Pathname.new(File.expand_path(storage_path)).join(album)
+    @album = album || 'NoAlbum'
+    @storage_path = Pathname.new(File.expand_path(storage_path)).join(@album)
   end
 
   def process(result)

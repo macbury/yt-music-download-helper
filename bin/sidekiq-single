@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /app
+exec bin/sidekiq --require ./app.rb --concurrency 2

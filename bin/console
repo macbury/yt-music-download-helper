@@ -5,6 +5,8 @@ require "bundler/setup"
 require 'pry'
 require_relative '../app'
 
-url = 'https://www.youtube.com/watch?v=CTki2sfzsko'
+# url = 'https://www.youtube.com/watch?v=cKK_H_qYT6k&list=PLT_ALYzO6ED8Yrl2JqUHSoU03rn756kIX'
+# helper = YdlHelper.new(download_dir: ENV.fetch('INCOMPLETE_PATH'))
+# puts helper.get_playlist_videos_ids(url).inspect
 
-DownloadMovieWorker.perform_async(url)
+DownloadMovieWorker.new.perform('GJMD3eO7tpE')

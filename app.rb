@@ -15,6 +15,7 @@ Bundler.require
 require_relative './lib/ydl_helper'
 require_relative './lib/metadata_processor'
 require_relative './lib/download_movie_worker'
+require_relative './lib/find_playlist_worker'
 
 Sidekiq.configure_client do |config|
   config.redis = { url: ENV.fetch('REDIS_URL') }

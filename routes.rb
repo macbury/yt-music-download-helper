@@ -16,7 +16,7 @@ class Routes < Sinatra::Base
       param = JSON.parse(request.body.read)
       url = param['query']
       if url
-        DownloadMovieWorker.perform_async(url)
+        FindPlaylistWorker.perform_async(url)
         json success: true, title: 'Done'
       else
         json success: false

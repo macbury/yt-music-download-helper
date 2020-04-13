@@ -11,8 +11,11 @@ RUN mkdir -p /output
 WORKDIR /app
 STOPSIGNAL SIGRTMIN+3
 
-RUN apt-get update && apt-get install -y curl wget python python-pip libtag1-dev ffmpeg apt-transport-https ruby-switch ruby2.5 ruby2.5-dev && \
-  ruby-switch --set ruby2.5
+RUN apt-add-repository ppa:brightbox/ruby-ng && apt-get update
+RUN apt-get install -y ruby-switch ruby2.5 ruby2.5-dev
+RUN ruby-switch --set ruby2.5
+
+RUN apt-get update && apt-get install -y curl wget python python-pip libtag1-dev ffmpeg apt-transport-https
 
 RUN gem update --system && gem install bundler
 COPY Gemfile /app

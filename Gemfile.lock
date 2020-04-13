@@ -24,7 +24,7 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
     puma (3.12.1)
-    rack (2.0.7)
+    rack (2.2.2)
     rack-protection (2.0.5)
       rack
     redis (4.1.3)

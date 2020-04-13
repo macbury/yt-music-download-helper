@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+
+require "rubygems"
+require "bundler/setup"
+require 'pry'
+require_relative '../app'
+
+url = 'https://www.youtube.com/watch?v=CTki2sfzsko'
+
+DownloadMovieWorker.perform_async(url)

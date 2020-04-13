@@ -1,85 +1,84 @@
-require 'pycall'
-require 'pycall/import'
+require 'terrapin'
+
 class YdlHelper
   attr_reader :download_dir
 
   def initialize(download_dir: '/tmp/')
     @download_dir = Pathname.new(File.expand_path(download_dir))
+    
     FileUtils.mkdir_p(download_dir)
   end
 
-  def get_download_list(url)
-    playlist_data = ydl_with(extract_info_params).extract_info(url, false, false)
-    return false unless playlist_data
+  def get_info(url)
+    response = exec_command(info_arguments, {
+      url: url
+    }, swallow_stderr: true, expected_outcodes: [0, 1])
 
-    extractor = playlist_data['extractor'].downcase
-    if extractor == 'youtube:playlist'
-      DownloadList.new(playlist_data['title'], playlist_data['entries'].map { |e| e && e['id'] }.compact)
-    else
-      DownloadList.new(playlist_data['title'], [playlist_data['id']])
-    end
+    result = JSON.parse(response)
+
+    {
+      title: result['title'],
+      album: result['album'],
+      id: result['id']
+    }
   end
 
   def download(url)
-    result = ydl_with(download_params).extract_info(url, true, false)
-    
-    return false unless result
+    exec_command(download_arguments, {
+      url: url
+    })
+
+    result = get_info(url)
 
     result.to_h.merge({
-      'output' => {
-        'audio' => download_dir.join(result['id']+ '.mp3'),
-        'preview' => download_dir.join(result['id']+ '.jpg')
+      output: {
+        audio: download_dir.join(result[:id]+ '.mp3'),
+        preview: download_dir.join(result[:id]+ '.jpg')
       }
     })
   end
 
   private
 
-  def ydl_with(params)
-    PyCall.import_module('youtube_dl').YoutubeDL.new(params: params)
+  def exec_command(args, opts, add = {})
+    line = Terrapin::CommandLine.new('youtube-dl', "#{options_to_commands(args)} :url", add)
+    puts line.command(opts)
+    line.run(opts)
   end
 
-  def download_params
+  def download_arguments
     {
-      'format': 'bestaudio/best',
-      'writethumbnail': true,
-      'nocheckcertificate': true,
-      'outtmpl': download_dir.join('%(id)s.%(ext)s').to_s,
-      'ignoreerrors': true,  # Do not stop on download errors.
-      'nooverwrites': true,  # Prevent overwriting files.
-      'forceurl': true,  # Force printing final URL.
-      'forcethumbnail': true,  # Force printing thumbnail URL.
-      'forcefilename': true,  # Force printing final filename.
-      'listformats': false, # Print an overview of available video formats and exit.,
-      'postprocessors': [
-        { key: 'FFmpegMetadata' },
-        {
-          'key': 'FFmpegExtractAudio',
-          'preferredcodec': 'mp3',
-          'preferredquality': '198',
-        }
-      ]
+      'extract-audio': true,
+      'format': 'bestaudio/best'.inspect,
+      'write-thumbnail': true,
+      'no-check-certificate  ': true,
+      'output': download_dir.join('%(id)s.%(ext)s').to_s.inspect,
+      'ignore-errors': true,  # Do not stop on download errors.
+      'no-overwrites': true,  # Prevent overwriting files
+      'prefer-ffmpeg': true,
+      'audio-format': 'mp3',
+      'audio-quality': 0
     }
   end
 
-  def extract_info_params
+  def info_arguments
     {
-      ignoreerrors: true,
-      nooverwrites: true,
-      format: 'bestaudio/best',
-      listformats: false,
-      forcefilename: true,
-      forcethumbnail: true,
-      'nocheckcertificate': true,
-      forceurl: true,
-      postprocessors: [
-        { key: 'FFmpegMetadata' },
-        {
-          'key': 'FFmpegExtractAudio',
-          'preferredcodec': 'mp3',
-          'preferredquality': '198',
-        }
-      ]
+      'dump-json': true,
+      'ignore-errors': true
     }
   end
+
+  def options_to_commands(options)
+    commands = []
+    options.each do |key, value|
+      if value.to_s == 'true'
+        commands.push "--#{key}"
+      elsif value.to_s == 'false'
+        commands.push "--no-#{key}"
+      else
+        commands.push "--#{key} #{value}"
+      end
+    end
+    commands.join(' ')
+  end  
 end

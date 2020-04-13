@@ -1,3 +1,7 @@
-require './app'
+require_relative './routes'
+require 'sidekiq/web'
 
-run App
+run Rack::URLMap.new(
+  '/' => Routes, 
+  '/api/sidekiq' => Sidekiq::Web
+)

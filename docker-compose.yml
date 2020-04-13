@@ -1,0 +1,8 @@
+version: '3'
+services:
+  redis:
+    image: redis:4.0.10
+    ports:
+      - 6380:6379
+    volumes:
+      - ./test/redis:/data

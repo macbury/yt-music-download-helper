@@ -1,2 +1,3 @@
 front-end: bundle exec rackup
-back-end: yarn run dev
+back-end: yarn dev
+sidekiq: bundle exec sidekiq --require ./app.rb

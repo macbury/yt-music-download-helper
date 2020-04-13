@@ -1,5 +1,5 @@
-FROM ruby:2.5.1
-
+FROM ruby:2.5.5
+# https://github.com/macbury/busix/blob/master/Dockerfile
 RUN apt-get update && apt-get install -y curl wget python python-pip libtag1-dev ffmpeg apt-transport-https
 
 ENV APP_ENV production

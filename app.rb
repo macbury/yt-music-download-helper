@@ -6,7 +6,7 @@ require 'sinatra/base'
 require 'sinatra/reloader'
 require 'json'
 require 'taglib'
-require 'pry'
+# require 'pry'
 require 'dotenv/load'
 require 'sidekiq'
 

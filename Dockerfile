@@ -22,9 +22,9 @@ RUN bundle install
 COPY . /app
 RUN pip install -r requirements.txt 
 
-RUN mkdir /etc/service/puma
-ADD bin/server /etc/service/puma/run
-RUN chmod +x /etc/service/puma/run
+RUN mkdir /etc/service/server
+ADD bin/server /etc/service/server/run
+RUN chmod +x /etc/service/server/run
 
 RUN mkdir /etc/service/sidekiq-single
 ADD bin/sidekiq-single /etc/service/sidekiq-single/run

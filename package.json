@@ -15,7 +15,7 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.4.4",
     "autoprefixer": "^7.1.4",
-    "axios": "^0.16.2",
+    "axios": "^0.21.1",
     "babel-loader": "^8.0.5",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.3.1",

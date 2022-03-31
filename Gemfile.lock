@@ -20,10 +20,12 @@ GEM
     minitest (5.14.0)
     multi_json (1.13.1)
     mustermann (1.0.3)
+    nio4r (2.5.8)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    puma (3.12.1)
+    puma (4.3.12)
+      nio4r (~> 2.0)
     rack (2.0.7)
     rack-protection (2.0.5)
       rack
